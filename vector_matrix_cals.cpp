@@ -1,16 +1,19 @@
 #include "vector"
 #include "cmath"
 #include "complex"
+#define MATRIX_LF std::vector<std::vector<long double>>
+#define VECTOR_LF std::vector<long double>
+#define MATRIX_CLF std::vector<std::vector<std::complex<long double>>>
+#define VECTOR_CLF std::vector<std::complex<long double>>
 
-
-std::vector<long double> vector_scalar_times(std::vector<long double> vector, long double scalar) {
-    for (int i = 0; i < vector.size(); i++) {
-        vector[i] *= scalar;
+VECTOR_LF vector_scalar_times(VECTOR_LF vector, long double scalar) {
+    for (long double & i : vector) {
+        i *= scalar;
     }
     return vector;
 }
 
-std::vector<long double> vector_cross_product(std::vector<long double> a, std::vector<long double> b) {
+VECTOR_LF vector_cross_product(VECTOR_LF a, VECTOR_LF b) {
     if (a.size() != b.size()) {
         throw std::invalid_argument("Vectors must have the same size");
     }
@@ -48,18 +51,18 @@ long double vector_dot_product(std::vector<long double> a, std::vector<long doub
 
 
 std::vector<std::vector<long double>> matrix_timesv(std::vector<std::vector<long double>> a, std::vector<std::vector<long double>> b) {
-    std::vector<unsigned long long int> size_of_as;
-    std::vector<unsigned long long int> size_of_bs;
-    for (unsigned long long int i = 0;i<a.size();i++) {
-        size_of_as.push_back(a[i].size());
+    std::vector<unsigned long long int> size_of_as(a.size());
+    std::vector<unsigned long long int> size_of_bs(b.size());
+    for (const auto & i : a) {
+        size_of_as.push_back(i.size());
     }
     for (unsigned long long int j = 0;j<size_of_as.size();j++) {
         if (size_of_as[j] != size_of_as[0]) {
             throw std::invalid_argument("Invalid Matrix");
         }
     }
-    for (unsigned long long int i = 0;i<b.size();i++) {
-        size_of_bs.push_back(b[i].size());
+    for (const auto & i : b) {
+        size_of_bs.push_back(i.size());
     }
     for (unsigned long long int k = 0;k<size_of_as.size();k++) {
         if (size_of_bs[k] != size_of_bs[0]) {
@@ -79,7 +82,7 @@ std::vector<std::vector<long double>> matrix_timesv(std::vector<std::vector<long
 //            }
 //        }
 //    }
-    std::vector<std::vector<long double>> result;
+    std::vector<std::vector<long double>> result(b.size());
     for (unsigned long long int i = 0;i<a[0].size();i++) {
         for (unsigned long long int j = 0;j<b.size();j++) {
             long double for_result = 0;
@@ -137,3 +140,48 @@ std::vector<std::vector<long double>> matrix_timesv(std::vector<std::vector<long
 //    }
 //    return result;
 //}
+
+std::vector<long double> add_subtractv(std::vector<long double> a, std::vector<long double> b, bool plus_or_minus) {//True = +, False = -
+    if (a.size() != b.size()) {
+        throw std::invalid_argument("Two Vectors Dimesion is different");
+    }
+    if (!plus_or_minus) {
+        std::vector<long double> result(a.size());
+        for (unsigned long long int i = 0; i < a.size(); i++) {
+            result[i] = a[i] - b[i];
+        }
+        return result;
+    }
+    else {
+        std::vector<long double> result(b.size());
+        for (unsigned long long int i = 0; i < a.size(); i++) {
+            result[i] = a[i] + b[i];
+        }
+        return result;
+    }
+}
+
+std::vector<std::vector<long double>> add_substractmv(MATRIX_LF a, MATRIX_LF b, bool plus_or_minus) { // As Same as Vector add sub
+    if (a.size() != b.size()) {
+        throw std::invalid_argument("Two Vectors Dimesion is different");
+    }
+    if (a[0].size() != b[0].size()) {
+        throw std::invalid_argument("Two Vectorsn Dimension is different");
+    }
+    MATRIX_LF result(a.size());
+    if (plus_or_minus) {
+        for (unsigned long long int i = 0;i<a.size();i++) {
+            for (unsigned long long int j = 0;j<a[0].size();j++) {
+                result[i][j] = a[i][j] + b[i][j];
+            }
+        }
+    }
+    else {
+        for (unsigned long long int i = 0;i<a.size();i++) {
+            for (unsigned long long int j=0;j<a[0].size();j++) {
+                result[i][j] = a[i][j] - b[i][j];
+            }
+        }
+    }
+    return result;
+}
