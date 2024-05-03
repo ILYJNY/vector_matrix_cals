@@ -5,6 +5,14 @@
 #define VECTOR_LF std::vector<long double>
 #define MATRIX_CLF std::vector<std::vector<std::complex<long double>>>
 
+long double vector_size(VECTOR_LF vector) {
+    long double for_result = 0;
+    for (long double i : vector) {
+        for_result += powl(i, 2);
+    }
+    return sqrtl(for_result);
+}
+
 VECTOR_LF vector_scalar_times(VECTOR_LF vector, long double scalar) {
     for (long double & i : vector) {
         i *= scalar;
@@ -184,3 +192,65 @@ std::vector<std::vector<long double>> add_substractmv(MATRIX_LF a, MATRIX_LF b, 
     }
     return result;
 }
+
+long double distance_line(VECTOR_LF a, VECTOR_LF b) {
+    return vector_size(add_subtractv(a, b, false));
+}
+
+
+MATRIX_LF transpos(MATRIX_LF matrix) {
+    MATRIX_LF result;
+    for (unsigned long long int i=0;i<matrix.size();i++) {
+        for (unsigned long long int j = 0;j<matrix[0].size();j++) {
+            result[i][j] = matrix[j][i];
+        }
+    }
+    return result;
+}
+
+long double det_2by2(MATRIX_LF matrix) {
+    if (matrix[0].size() != 2) {
+        throw std::invalid_argument("Matrix must be 2x2");
+    }
+    if (matrix.size() != 2) {
+        throw std::invalid_argument("Matrix must be 2x2");
+    }
+}
+
+MATRIX_LF Minor_matrix(MATRIX_LF matrix, unsigned long long int i, unsigned long long int j) {
+    MATRIX_LF result(matrix.size() - 1, std::vector<long double>(matrix[0].size() - 1));
+    for (unsigned long long int i_ = 0;i_<matrix[0].size();i_++) {
+        for (unsigned long long int j_=0;j_<matrix.size();j_++) {
+            if (i_ == i || j_ == j)
+                continue;
+            else {
+                result[i_][j_] = matrix[i_][j_];
+            }
+        }
+    }
+}
+
+
+long double det_laplace(MATRIX_LF matrix) {
+    unsigned long long int j = 0;
+    long double result = 0;
+    if (matrix[0].size() == 2 && matrix.size() == 2) {
+        return det_2by2(matrix);
+    }
+    for (unsigned long long int i=0;i<matrix.size();i++) {
+        result += pow(-1, i + j) * matrix[i][j] * det_laplace();
+    }
+}
+
+
+long double vector_dot_product_with_Matrix(VECTOR_LF a, VECTOR_LF b) {
+    if (a.size() != b.size()) {
+        throw std::invalid_argument("Vectors must have the same size");
+    }
+    MATRIX_LF a_matrix;
+    MATRIX_LF b_matrix;
+    a_matrix[0] = a;
+    b_matrix[0] = b;
+    return matrix_timesv(transpos(b_matrix), a_matrix)[0][0];
+}
+
