@@ -4,7 +4,6 @@
 #define MATRIX_LF std::vector<std::vector<long double>>
 #define VECTOR_LF std::vector<long double>
 #define MATRIX_CLF std::vector<std::vector<std::complex<long double>>>
-#define VECTOR_CLF std::vector<std::complex<long double>>
 
 VECTOR_LF vector_scalar_times(VECTOR_LF vector, long double scalar) {
     for (long double & i : vector) {
