@@ -13,6 +13,29 @@ long double vector_size(VECTOR_LF vector) {
     return sqrtl(for_result);
 }
 
+MATRIX_LF floor_matrix(MATRIX_LF matrix) {
+    MATRIX_LF result;
+    for (unsigned long long int i=0;matrix.size();i++) {
+        for (unsigned long long int j=0;matrix[0].size();j++) {
+            result[i][j] = floorl(matrix[i][j]);
+        }
+    }
+    return result;
+}
+
+
+MATRIX_LF round_matrix(MATRIX_LF matrix) {//반올림
+    MATRIX_LF result;
+    for (unsigned long long int i=0;matrix.size();i++) {
+        for (unsigned long long int j=0;matrix[0].size();j++) {
+            result[i][j] = floorl(matrix[i][j] + 1/2);
+        }
+    }
+    return result;
+}
+
+
+
 MATRIX_LF matrix_scalar_multiply(MATRIX_LF matrix, long double scalar) {
 //    MATRIX_LF result(a.size(), VECTOR_LF(b[0].size()));
 //    for (unsigned long long int i = 0; i < a.size(); i++) {
@@ -295,13 +318,22 @@ long double vector_dot_product_with_Matrix(VECTOR_LF a, VECTOR_LF b) {
 
 
 MATRIX_LF inverse_matrix(MATRIX_LF matrix) {
-    long double det_matrix = det_laplace(matrix);
-    MATRIX_LF M_T = transpos(matrix);
-//    MATRIX_LF adjugate_matrix = cofactor_matrix(M_T);
-//    MATRIX_LF inverse = scalar_multiply(adjugate_matrix, 1 / det_matrix);
-//    return inverse;
-    MATRIX_LF adjugate_matrix = confactor_matrix(M_T);
-    MATRIX_LF inverse = matrix_scalar_multiply(adjugate_matrix, 1 / det_matrix);
-    return inverse;
-
+    if (matrix.size() == 2 && matrix[0].size() == 2) {
+        MATRIX_LF result;
+        result[0][0] = matrix[1][1];
+        result[0][1] = (-1) * matrix[0][1];
+        result[1][0] = (-1) * matrix[1][0];
+        result[1][1] = matrix[0][0];
+        return matrix_scalar_multiply(result, matrix[0][0]*matrix[1][1] - matrix[1][0] * matrix[0][1]);
+    }
+    else {
+        long double det_matrix = det_laplace(matrix);
+        MATRIX_LF M_T = transpos(matrix);
+        //    MATRIX_LF adjugate_matrix = cofactor_matrix(M_T);
+        //    MATRIX_LF inverse = scalar_multiply(adjugate_matrix, 1 / det_matrix);
+        //    return inverse;
+        MATRIX_LF adjugate_matrix = confactor_matrix(M_T);
+        MATRIX_LF inverse = matrix_scalar_multiply(adjugate_matrix, 1 / det_matrix);
+        return inverse;
+    }
 }
